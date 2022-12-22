@@ -75,8 +75,8 @@ object Main {
   private def executeIcebergQuery(query:String): List[String] = {
 
     val partitionPredicate = Expressions.and(
-      Expressions.equal("ltv_timestamp", "2022-03-01"),
-      Expressions.equal("acc_id", "0123456"))
+      Expressions.equal("date", "2022-03-01"),
+      Expressions.equal("account_id", "0123456"))
 
     val jsonDataRows = for {
       catalog         <- getGlueCatalog
