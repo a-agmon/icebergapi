@@ -7,7 +7,7 @@ object IcebergFunctions {
     val bytes = targetFileSizeMB * 1000 * 1000
     s"""
        |CALL $icebergCatalog.system.rewrite_data_files(table => '$fullTableName', strategy => 'sort',
-       | sort_order => 'attribution_type DESC NULLS LAST, media_source DESC NULLS LAST, installs_count DESC NULLS LAST',
+       | sort_order => 'type DESC NULLS LAST, source DESC NULLS LAST, insts DESC NULLS LAST',
        | options => map (
        |    'min-input-files','15'
        |    ,'partial-progress.enabled','true'
@@ -21,7 +21,7 @@ object IcebergFunctions {
     val bytes = targetFileSizeMB * 1000 * 1000
     s"""
        |CALL $icebergCatalog.system.rewrite_data_files(table => '$fullTableName', strategy => 'sort',
-       | sort_order => 'attribution_type DESC NULLS LAST, media_source DESC NULLS LAST, installs_count DESC NULLS LAST',
+       | sort_order => 'type DESC NULLS LAST, source DESC NULLS LAST, insts DESC NULLS LAST',
        | options => map (
        |    'min-input-files','15'
        |    ,'partial-progress.enabled','true'
