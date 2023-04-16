@@ -50,8 +50,7 @@ object IcebergRewriter {
     val filePath = s"$partitionPath/${UUID.randomUUID().toString}.parquet"
     log.info(s"compacting files to:$filePath")
     val outputFile = table.io().newOutputFile(filePath)
-   Parquet
-      .writeData(outputFile)
+   Parquet.writeData(outputFile)
       .schema(table.schema())
       .createWriterFunc(GenericParquetWriter.buildWriter)
       .overwrite()
@@ -71,10 +70,10 @@ object IcebergRewriter {
 
   private def compactPartitionFiles(dataFiles: List[DataFile], table: Table): DataFile = {
     val dataWriter = getDataWriter(table, dataFiles.head)
-    val outputFiles = dataFiles.map(_.path().toString)
-    outputFiles.foreach(parquetFile => {
-      val dataReader = getDataReader(table, parquetFile)
-      log.info(s"reading  file:$parquetFile")
+    val dataFilesPath = dataFiles.map(_.path().toString)
+    dataFilesPath.foreach(dataFilePath => {
+      val dataReader = getDataReader(table, dataFilePath)
+      log.info(s"reading  file:$dataFilePath")
       dataReader.iterator().asScala.foreach(dataWriter.write)
       dataReader.close()
     })
@@ -94,8 +93,8 @@ object IcebergRewriter {
     val programArgs = ProgramArgs(args(0), args(1), args(2), args(3))
     val catalog = getGlueCatalog(programArgs.catalogName, programArgs.locationS3)
     val table = getIcebergTableByName(programArgs.icebergNamespace, programArgs.icebergTableName, catalog)
-    val filter = Expressions.equal("tier", "B")
-    val dataFiles = getDataFiles(table, Some(filter))
+    val partitionFilter = Expressions.equal("tier", "A")
+    val dataFiles = getDataFiles(table, Some(partitionFilter))
     // partition files before compaction
     dataFiles.foreach(df => log.info(df.path().toString))
     // compact the partition files
@@ -103,9 +102,7 @@ object IcebergRewriter {
     // commit the rewrite
     commitCompaction(dataFiles, List(compactedFile), table)
     // now show the partition files after compaction
-    getDataFiles(table, Some(filter)).foreach(df => log.info(df.path().toString))
-
+    getDataFiles(table, Some(partitionFilter)).foreach(df => log.info(df.path().toString))
   }
-
 
 }
