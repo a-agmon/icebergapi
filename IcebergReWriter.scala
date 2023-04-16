@@ -1,4 +1,4 @@
-package com.appsflyer.bdd
+package com.appsflyer.bdnd
 
 import org.apache.iceberg.{CatalogProperties, DataFile, Table}
 import org.apache.iceberg.aws.glue.GlueCatalog
